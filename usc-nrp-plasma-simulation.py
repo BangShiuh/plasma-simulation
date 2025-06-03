@@ -1,3 +1,53 @@
+# %% [markdown]
+# ## Model and Governing Equations
+#
+# We simulate the nanosecond pulse plasma with a zero-dimensional model. Different levels of details can be included in the model. For a most simple model, we consider a constant volume adiabatic (no mass or heat create or destroyed at the boundary). The governing equations can be written as
+#
+# $\frac{dC_k}{dt} = \dot{\omega}_k$
+#
+# Note that this simple model assumes a constant gas temperature. The value of $\omega$ depends on the concentrations, gas temperature, electron temperature/EEDF.
+#
+# ## Helium Plasma Reaction Mechanism and Collisional Process
+#
+# We use the reaction mechnism in stacks.iop.org/PSST/20/055005. 
+#
+#
+# Collision process - cross section is from biagi-v7.1 - some more recent paper use biagi-v8.9 which contains more excited states but the reaction mechanism in this simulation does not distinguish those state. Therefore, biagi-v7.1 is more suitable
+#
+# 1. He + e  -> e + He
+#
+# 2. e + He <-> He(2^3S_1) + e - Triplet state
+#
+# 3. He + e <-> e + He(2^1S_1) - Singlet state
+#
+# 4. He + e -> e + e + He+
+#
+# Since the threshold energy of He(2^3S_1) and He(2^1S_1) are close (19.8 eV and 20.61eV respectively). We combine the two states into He*.
+#
+# A special collision process
+#
+# e + He* -> He+ + 2 e no cross section data so use electron temperature expression from stacks.iop.org/PSST/22/015003
+#
+#
+# We also include other charged species reactions for Helium.
+#
+# ## Helium Excited States Thermodynamics
+#
+# We are using the constant Cp model, https://cantera.org/dev/cxx/df/d7e/classCantera_1_1ConstCpPoly.html, for the monoatomic molecules, e, He, He*, He+. The reference values are from https://webbook.nist.gov/cgi/cbook.cgi?ID=C7440597&Type=JANAFG&Table=on#JANAFG for Helium. https://ntrs.nasa.gov/api/citations/20020085330/downloads/20020085330.pdf is also useful resource. For He*, we use the ground state properties and add the threshold energy (19.82 eV) to the enthalpy. For the weakly bonded diatomic molecules He2+, He2*, the thermal properties are the combination of He, He*, He+. For example, adding the thermal properties of He and He+ become the thermal properties of He2+. 
+
+# %%
+# Cantera take the EEDF
+import cantera as ct
+
+from extensible_two_temp_plasma import TwoTempPlasmaRate
+# read input file
+plasma = ct.Solution("data/helium-oxygen-hydrogen-plasma.yaml", phase="basic-plasma")
+
+# %% [markdown]
+# ## Electron Energy Distribution Function
+#
+# During pulse, electron energy distribution function become anisotropic and requires solving the electron Boltzmann equation (two-term approximation method) to obtain the energy distribution. BOLOS is used, and the result matches to BOLSIG+. Solving the electron Boltzmann equation with two-term approximation requires the reduced electric field strength (Td), gas temperature (minor factor), and the cross-section data (collision process 1-4). The calculated EEDF can be stored in a table. Cantera then read the EEDF to obtain reaction constants and other properties such as inelastic/elastic energy loss.
+
 # %%
 """
 BOLOS is used to solve the Boltzmann equation for a given reduced electric field and gas temperature.
@@ -71,14 +121,9 @@ EEDF_grid = bsolver.grid.b
 
 
 # %%
-# Cantera take the EEDF
-import cantera as ct
+# setup for the pulse simulation
+import scipy.integrate
 
-from extensible_two_temp_plasma import TwoTempPlasmaRate
-# read input file
-plasma = ct.Solution("data/helium-oxygen-hydrogen-plasma.yaml", phase="basic-plasma")
-
-# %%
 class ReactorOde:
     def __init__(self, plasma):
         # Parameters of the ODE system and auxiliary data are stored in the
@@ -95,10 +140,6 @@ class ReactorOde:
         dndt = wdot
 
         return np.hstack((dndt))
-
-# %%
-# setup for the pulse simulation
-import scipy.integrate
 
 plasma.TPX = 300, 0.01 * ct.one_atm, "He:1.0, He+:1e-6, e:1e-6"
 y0 = np.hstack(plasma.concentrations)
@@ -164,6 +205,11 @@ for p_index in range(10):
 
 
 
+
+# %% [markdown]
+# ## Simulation Result
+#
+# Reduced electric field at 1 Td, pure Helium plasma. 10k Hz 10 ns pulse (10 times) which reach a quasi-steady state:
 
 # %%
 # Plot the results
