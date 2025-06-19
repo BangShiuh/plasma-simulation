@@ -1,0 +1,289 @@
+description: |
+  Plasma chemistry model with He and O2.
+units:
+  length: m
+  quantity: molec
+  activation-energy: K
+
+phases:
+- name: basic-plasma
+  thermo: plasma
+  elements: [He, O, E, H]
+  species:
+  - helium-oxygen-plasma.yaml/species: [He, He*, He+, He2*,
+      He2+, e, O2, O2-, O, O-, O4-, O2+, O+, O4+, O2(a1), O2(b1),
+      O(1D), O3, O3-]
+  - species: [H2]
+  kinetics: gas
+  reactions:
+  - helium-oxygen-plasma.yaml/reactions: all
+  - reactions: all
+  transport: none
+  electron-energy-distribution:
+    type: isotropic
+    shape-factor: 2.0
+    mean-electron-energy: 1.0 eV
+    energy-levels: [0.0, 0.1, 1.0, 10.0]
+
+species:
+
+reactions:
+
+# Neutral homogeneous reactions Jimenez 2015
+- equation: H + O3 => O + HO2
+  rate-constant: {A: 7.51e-19, b: 0.0, Ea: 0.0}
+  note: G1
+
+- equation: H + HO2 => H2O + O
+  rate-constant: {A: 9.18e-17, b: 0.0, Ea: 971.9}
+  note: G2
+
+- equation: H + HO2 => H2O + O(1D)
+  rate-constant: {A: 4.8e-22, b: 1.55, Ea: -80.58}
+  note: G3
+
+- equation: H + HO2 => O2 + H2
+  rate-constant: {A: 1.1e-18, b: 0.56, Ea: 346}
+  note: G4
+
+- equation: H + HO2 => OH + OH
+  rate-constant: {A: 2.35e-16, b: 0.0, Ea: 373.7}
+  note: G5
+
+- equation: O(1D) + HO2 => OH + O2
+  rate-constant: {A: 2.9e-17, b: 0.0, Ea: -200}
+  note: G6
+
+- equation: O2(a1) + HO2 => OH + O + O2
+  rate-constant: {A: 1.66e-17, b: 0.0, Ea: 0.0}
+  note: G7
+
+- equation: H + O3 => OH + O2
+  type: extended-Arrhenius
+  A: 2.71e-17
+  b: 0.75
+  Ea: 0.0
+  note: G8
+
+- equation: O(1D) + O3 => O2 + O2
+  rate-constant: {A: 1.2e-16, b: 0.0, Ea: 0.0}
+  note: G9
+
+- equation: O(1D) + O3 => O + O + O2
+  rate-constant: {A: 1.2e-16, b: 0.0, Ea: 0.0}
+  note: G10
+
+- equation: O(1D) + H2 => OH + H
+  rate-constant: {A: 1.1e-16, b: 0.0, Ea: 0.0}
+  note: G11
+
+- equation: O(1D) + O2 => O + O2
+  rate-constant: {A: 4.8e-18, b: 0.0, Ea: -67}
+  note: G12
+
+- equation: O(1D) + O2 => O + O2(a1)
+  rate-constant: {A: 1.6e-18, b: 0.0, Ea: -67}
+  note: G13
+
+- equation: O(1D) + OH => H + O2
+  rate-constant: {A: 6e-17, b: -0.186, Ea: 154}
+  note: G14
+
+- equation: O(1D) + H2O => OH + OH
+  rate-constant: {A: 1.62e-16, b: 0.0, Ea: -64.95}
+  note: G15
+
+- equation: O(1D) + H2O => O + H2O
+  rate-constant: {A: 1.2e-17, b: 0.0, Ea: 0.0}
+  note: G16
+
+# Ion-molecule reactions Jimenez 2015
+- equation: H+ + O => O+ + H
+  rate-constant: {A: 3.75e-16, b: 0.0, Ea: 0.0}
+  note: T1
+
+- equation: H+ + H2O => H2O+ + H
+  rate-constant: {A: 8.20e-15, b: 0.0, Ea: 0.0}
+  note: T2
+
+- equation: H+ + O2 => O2+ + H
+  rate-constant: {A: 1.17e-15, b: 0.0, Ea: 0.0}
+  note: T3
+
+- equation: H2+ + H => H2 + H+
+  rate-constant: {A: 6.40e-16, b: 0.0, Ea: 0.0}
+  note: T4
+
+- equation: H2+ + H2 => H3+ + H
+  rate-constant: {A: 2.00e-15, b: 0.0, Ea: 0.0}
+  note: T5
+
+- equation: H2+ + H2O => H2O+ + H2
+  rate-constant: {A: 3.87e-15, b: 0.0, Ea: 0.0}
+  note: T6
+
+- equation: H2+ + H2O => H3O+ + H
+  rate-constant: {A: 3.43e-15, b: 0.0, Ea: 0.0}
+  note: T7
+
+- equation: H2+ + O2 => O2+ + H2
+  rate-constant: {A: 7.83e-16, b: 0.0, Ea: 0.0}
+  note: T8
+
+- equation: H2+ + O2 => HO2+ + H
+  rate-constant: {A: 1.92e-15, b: 0.0, Ea: 0.0}
+  note: T9
+
+- equation: H3+ + O => OH+ + H2
+  rate-constant: {A: 8.40e-16, b: 0.0, Ea: 0.0}
+  note: T10
+
+- equation: H3+ + O => H2O+ + H
+  rate-constant: {A: 3.60e-16, b: 0.0, Ea: 0.0}
+  note: T11
+
+- equation: H3+ + H2O => H3O+ + H2
+  rate-constant: {A: 5.30e-15, b: 0.0, Ea: 0.0}
+  note: T12
+
+- equation: H3+ + O2 => HO2+ + H2
+  rate-constant: {A: 6.70e-16, b: 0.0, Ea: 0.0}
+  note: T13
+
+- equation: O+ + H => H+ + O
+  rate-constant: {A: 6.40e-16, b: 0.0, Ea: 0.0}
+  note: T14
+
+- equation: O+ + H2 => OH+ + H
+  rate-constant: {A: 1.62e-15, b: 0.0, Ea: 0.0}
+  note: T15
+
+- equation: O+ + H2O => H2O+ + O
+  rate-constant: {A: 2.60e-15, b: 0.0, Ea: 0.0}
+  note: T16
+
+- equation: OH+ + H2 => H2O+ + H
+  rate-constant: {A: 9.70e-16, b: 0.0, Ea: 0.0}
+  note: T17
+
+- equation: OH+ + H2O => H2O+ + OH
+  rate-constant: {A: 1.59e-15, b: 0.0, Ea: 0.0}
+  note: T18
+
+- equation: OH+ + H2O => H3O+ + O
+  rate-constant: {A: 1.30e-15, b: 0.0, Ea: 0.0}
+  note: T19
+
+- equation: OH+ + O2 => O2+ + OH
+  rate-constant: {A: 3.80e-16, b: 0.0, Ea: 0.0}
+  note: T20
+
+- equation: H2O+ + H2 => H3O+ + H
+  rate-constant: {A: 7.60e-16, b: 0.0, Ea: 0.0}
+  note: T21
+
+- equation: H2O+ + H2O => H3O+ + OH
+  rate-constant: {A: 1.85e-15, b: 0.0, Ea: 0.0}
+  note: T22
+
+- equation: H2O+ + O2 => O2+ + H2O
+  rate-constant: {A: 3.30e-16, b: 0.0, Ea: 0.0}
+  note: T23
+
+- equation: O2+ + H2 => HO2+ + H
+  rate-constant: {A: 4.00e-17, b: 0.0, Ea: 0.0}
+  note: T24
+
+- equation: HO2+ + H2 => H3+ + O2
+  rate-constant: {A: 3.30e-16, b: 0.0, Ea: 0.0}
+  note: T25
+
+- equation: O- + H2 => OH- + H
+  rate-constant: {A: 3e-17, b: 0.0, Ea: 0.0}
+  note: T26
+
+- equation: O- + H2O => OH- + OH
+  rate-constant: {A: 1.4e-15, b: 0.0, Ea: 0.0}
+  note: T27
+
+# Electron impact attachment (A: cm³/s → m³/s, Ea-electron: eV → K)
+- equation: e + O2 => O- + O
+  type: two-temperature-plasma
+  rate-constant: {A: 1.07e-15, b: -1.391, Ea-gas: 72644.2, Ea-electron: 72644.2}
+  note: A1
+
+- equation: e + H2O => OH + H-
+  type: two-temperature-plasma
+  rate-constant: {A: 3.54e-15, b: -1.5, Ea-gas: 77286, Ea-electron: 77286}
+  note: A2
+
+- equation: e + H2 => H- + H
+  type: two-temperature-plasma
+  rate-constant: {A: 5.6e-19, b: 0.5, Ea-gas: 63824.8, Ea-electron: 63824.8}
+  note: A3
+
+- equation: e + O2(a) => O + O-
+  type: two-temperature-plasma
+  rate-constant: {A: 2.28e-16, b: 0.0, Ea-gas: 26574.3, Ea-electron: 26574.3}
+  note: A4
+
+- equation: e + H2O => H2 + O-
+  type: two-temperature-plasma
+  rate-constant: {A: 7.08e-10, b: -1.3, Ea-gas: 99915, Ea-electron: 99915}
+  note: A5
+
+- equation: e + H2O => OH- + H
+  type: two-temperature-plasma
+  rate-constant: {A: 1.24e-10, b: -1.3, Ea-gas: 84945., Ea-electron: 84945.}
+  note: A6
+
+  # Detachment reactions
+- equation: e + H- => H + e + e
+  type: two-temperature-plasma
+  rate-constant: {A: 2.32e-14, b: 2.0, Ea-gas: 1508.6, Ea-electron: 1508.6}
+  note: Dt1
+
+- equation: H- + H => H2 + e
+  rate-constant: {A: 1.3e-15, b: 0.0, Ea: 0.0}
+  note: Dt2
+
+- equation: H- + O => OH + e
+  rate-constant: {A: 1e-15, b: 0.0, Ea: 0.0}
+  note: Dt3
+
+- equation: H- + O2 => HO2 + e
+  rate-constant: {A: 1.2e-15, b: 0.0, Ea: 0.0}
+  note: Dt4
+
+- equation: OH- + H => H2O + e
+  rate-constant: {A: 1.8e-15, b: 0.0, Ea: 0.0}
+  note: Dt5
+
+- equation: OH- + O => HO2 + e
+  rate-constant: {A: 2e-16, b: 0.0, Ea: 0.0}
+  note: Dt6
+
+- equation: e + OH- => OH + e + e
+  type: two-temperature-plasma
+  rate-constant: {A: 9.67e-12, b: -1.9, Ea-gas: 140414.5, Ea-electron: 140414.5}
+  note: Dt7
+
+- equation: O- + O2(a) => O3 + e
+  rate-constant: {A: 1.9e-16, b: 0.0, Ea: 0.0}
+  note: Dt8
+
+- equation: O- + H => OH + e
+  rate-constant: {A: 5e-16, b: 0.0, Ea: 0.0}
+  note: Dt9
+
+- equation: O- + H2 => H2O + e
+  type: extensible-Arrhenius
+  A: 6e-16
+  b: -0.24
+  Ea: 0.0
+  note: Dt10
+
+- equation: O- + O => O2 + e
+  rate-constant: {A: 2.3e-16, b: 0.0, Ea: 0.0}
+  note: Dt11, Reference [69]
+
