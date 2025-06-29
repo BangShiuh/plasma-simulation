@@ -39,9 +39,9 @@
 # Cantera take the EEDF
 import cantera as ct
 
-from extensible_two_temp_plasma import TwoTempPlasmaRate
+from extensible_two_temp_plasma import TwoTempPlasmaRate, ExtensibleArrhenius
 # read input file
-plasma = ct.Solution("data/helium-oxygen-hydrogen-plasma.yaml", phase="basic-plasma")
+plasma = ct.Solution("data/helium-oxygen-plasma.yaml", phase="basic-plasma")
 
 # %% [markdown]
 # ## Electron Energy Distribution Function
@@ -141,7 +141,9 @@ class ReactorOde:
 
         return np.hstack((dndt))
 
-plasma.TPX = 300, 0.01 * ct.one_atm, "He:1.0, He+:1e-6, e:1e-6"
+plasma.TPX = 300, 0.01 * ct.one_atm, "He:1.0, O2:0.001, He+:1e-6, e:1e-6"
+for i in range(4,10):
+    plasma.set_multiplier(0.0, i)
 y0 = np.hstack(plasma.concentrations)
 
 # Set up objects representing the ODE and the solver
@@ -231,6 +233,8 @@ try:
     # Plot 2: Species Mole Fractions (Electron and He*)
     ax2.plot(states.t, states('e').X, color='b', label='e', lw=2)
     ax2.plot(states.t, states('He*').X, color='g', label='He*', lw=2)
+    ax2.plot(states.t, states('O').X, color='r', label='O', lw=2)
+    ax2.plot(states.t, states('O2').X, color='y', label='O2', lw=2)
     ax2.set_xlabel('time (s)')
     ax2.set_ylabel('Mole Fraction')
     ax2.legend()
